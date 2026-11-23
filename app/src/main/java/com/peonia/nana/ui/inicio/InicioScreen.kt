@@ -2,6 +2,7 @@ package com.peonia.nana.ui.inicio
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -28,9 +31,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,21 +45,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.peonia.nana.R
+import com.peonia.nana.data.Humor
 import com.peonia.nana.data.Perfil
 import com.peonia.nana.ui.components.ChipNana
 import com.peonia.nana.ui.components.IconeArredondado
 import com.peonia.nana.ui.components.ImagemNana
-import com.peonia.nana.ui.components.Imagens
+import com.peonia.nana.ui.components.temImagem
+import com.peonia.nana.ui.diario.cor
+import com.peonia.nana.ui.diario.imagem
 import com.peonia.nana.ui.theme.NanaCores
-
-/** Sentimentos do check-in emocional da tela inicial (protótipo 05). */
-private enum class Humor(val rotulo: Int, val imagem: String) {
-    BEM(R.string.humor_bem, Imagens.HUMOR_BEM),
-    CALMA(R.string.humor_calma, Imagens.HUMOR_CALMA),
-    ANSIOSA(R.string.humor_ansiosa, Imagens.HUMOR_ANSIOSA),
-    CANSADA(R.string.humor_cansada, Imagens.HUMOR_CANSADA),
-    TRISTE(R.string.humor_triste, Imagens.HUMOR_TRISTE),
-}
 
 /**
  * 05 – Tela inicial personalizada.
@@ -73,10 +67,11 @@ private enum class Humor(val rotulo: Int, val imagem: String) {
 @Composable
 fun InicioScreen(
     perfil: Perfil,
+    humorDeHoje: Humor?,
+    aoRegistrarHumor: (Humor) -> Unit,
     aoAvisar: () -> Unit,
     aoAbrirDireitos: () -> Unit,
 ) {
-    var humor by rememberSaveable { mutableStateOf<Humor?>(null) }
     val mostrarAviso: () -> Unit = aoAvisar
 
     Column(
@@ -109,13 +104,13 @@ fun InicioScreen(
                 Humor.entries.forEach { h ->
                     OpcaoHumor(
                         humor = h,
-                        selecionado = humor == h,
-                        aoSelecionar = { humor = if (humor == h) null else h },
+                        selecionado = humorDeHoje == h,
+                        aoSelecionar = { aoRegistrarHumor(h) },
                         modifier = Modifier.weight(1f),
                     )
                 }
             }
-            if (humor != null) {
+            if (humorDeHoje != null) {
                 Text(
                     stringResource(R.string.ini_humor_resposta),
                     style = MaterialTheme.typography.bodySmall,
@@ -223,7 +218,24 @@ private fun OpcaoHumor(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // Ícone enviado pela equipe; o texto do sentimento já é lido pelo leitor de tela.
-            ImagemNana(humor.imagem, descricao = null, modifier = Modifier.size(36.dp))
+            if (temImagem(humor.imagem)) {
+                ImagemNana(humor.imagem, descricao = null, modifier = Modifier.size(36.dp))
+            } else {
+                Box(
+                    Modifier
+                        .size(28.dp)
+                        .clip(CircleShape)
+                        .background(NanaCores.IconeFundo),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(
+                        Modifier
+                            .size(12.dp)
+                            .clip(CircleShape)
+                            .background(humor.cor),
+                    )
+                }
+            }
             Spacer(Modifier.height(6.dp))
             Text(
                 stringResource(humor.rotulo),

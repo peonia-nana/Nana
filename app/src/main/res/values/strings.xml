@@ -19,7 +19,7 @@
 
     <!-- 02 Propósito -->
     <string name="prop_titulo_1">Mais do que um app,</string>
-    <string name="prop_titulo_2">o Nanã é uma rede de cuidado.</string>
+    <string name="prop_titulo_2">a Nanã é uma rede de cuidado.</string>
     <string name="prop_texto">Aqui a sua história importa.\nVocê encontra:</string>
     <string name="prop_acolhimento">Acolhimento</string>
     <string name="prop_informacao">Informação</string>
@@ -46,7 +46,7 @@
     <string name="cad_nome_titulo">Vamos nos conhecer?</string>
     <string name="cad_nome_texto">Para personalizar sua experiência, precisamos de poucas informações.</string>
     <string name="cad_privacidade_titulo">Seus dados, suas escolhas</string>
-    <string name="cad_privacidade_texto">Vamos perguntar, em 3 passos curtos: nome, idade, cidade, fase da maternidade, interesses, nome do bebê, quantidade de filhos e autodeclaração racial. Campos marcados como opcionais podem ficar em branco. Nesta versão, suas respostas ficam salvas apenas neste aparelho e ninguém mais tem acesso a elas.</string>
+    <string name="cad_privacidade_texto">Vamos perguntar, em 3 passos curtos: nome, idade, cidade, fase da maternidade, interesses, nome do bebê, quantidade de filhos e como você se identifica. Campos marcados como opcionais podem ficar em branco.\n\nSuas respostas ficam na sua conta, em servidores do Google no Brasil. Só você vê seu perfil e seu diário. Em Perfil › Privacidade e segurança você baixa uma cópia ou apaga tudo quando quiser.</string>
     <string name="cad_nome_label">Como você gosta de ser chamada?</string>
     <string name="cad_nome_ajuda">Usamos só para falar com você. Pode ser um apelido, não precisa ser o nome completo.</string>
     <string name="cad_nome_placeholder">Seu nome</string>
@@ -118,8 +118,8 @@
     <string name="nav_perfil">Perfil</string>
 
     <!-- 07 Direitos -->
-    <string name="dir_titulo">Direitos</string>
-    <string name="dir_apoio">Conheça o que a lei garante a você na gestação, no parto e no pós-parto.</string>
+    <string name="dir_titulo">Seus Direitos</string>
+    <string name="dir_apoio">Tire suas dúvidas</string>
     <string name="dir_busca">Campo de busca</string>
     <string name="dir_lista_temas">Lista de temas</string>
     <string name="dir_sem_resultado">Nenhum tema encontrado para essa busca.</string>
@@ -173,21 +173,49 @@
     <string name="dir_pos_3_selo">Cópia integral</string>
     <string name="dir_pos_3_texto">A mulher tem o direito de requerer e obter uma cópia integral do seu prontuário médico e do cartão de acompanhamento.</string>
 
-    <!-- 08 Apoio -->
-    <string name="apo_titulo">Apoio</string>
-    <string name="apo_apoio">Converse com outras mulheres que estão passando pelo mesmo momento que você.</string>
+    <!-- 08 Apoio (textos do protótipo) -->
+    <string name="apo_titulo">Conexão</string>
+    <string name="apo_apoio">Encontre apoio</string>
+    <string name="apo_busca">Campo de busca</string>
     <string name="apo_seus_chats">Seus chats</string>
-    <string name="apo_descobrir">Descobrir chats</string>
+    <string name="apo_descobrir">Descubra chats</string>
     <string name="apo_entrar">Entrar</string>
     <string name="apo_sem_resultado">Nenhum chat encontrado para essa busca.</string>
-    <!--
-      Textos de exemplo copiados do protótipo. A equipe ainda precisa definir
-      os chats de verdade, e eles dependem de um servidor que o app não tem.
-    -->
-    <string name="apo_ex_nome">Nome do chat</string>
-    <string name="apo_ex_ultima">Última mensagem do chat</string>
-    <string name="apo_ex_hora">00:00</string>
-    <string name="apo_ex_participantes">Tema · 00 participantes</string>
+    <string name="apo_nenhum_chat">Ainda não há chats por aqui. Assim que a equipe abrir os primeiros grupos, eles aparecem nesta tela.</string>
+    <string name="apo_sem_mensagens">Nenhuma mensagem ainda</string>
+    <plurals name="apo_nao_lidas">
+        <item quantity="one">%d mensagem não lida</item>
+        <item quantity="other">%d mensagens não lidas</item>
+    </plurals>
+
+    <!-- Chat -->
+    <plurals name="chat_participantes">
+        <item quantity="one">%d participante</item>
+        <item quantity="other">%d participantes</item>
+    </plurals>
+    <plurals name="chat_curtidas">
+        <item quantity="one">%d curtida</item>
+        <item quantity="other">%d curtidas</item>
+    </plurals>
+    <string name="chat_hoje">Hoje</string>
+    <string name="chat_ontem">Ontem</string>
+    <string name="chat_participante">Participante</string>
+    <string name="chat_escreva">Escreva uma mensagem</string>
+    <string name="chat_enviar">Enviar mensagem</string>
+    <string name="chat_anexar">Anexar</string>
+    <string name="chat_curtir">Curtir ou descurtir</string>
+    <string name="chat_digitando">Alguém está escrevendo</string>
+    <string name="chat_mais_opcoes">Mais opções</string>
+    <string name="chat_sair">Sair do chat</string>
+    <string name="chat_sair_titulo">Sair deste chat?</string>
+    <string name="chat_sair_texto">Você deixa de receber as mensagens do grupo. As mensagens que você já enviou continuam visíveis para as participantes. Você pode entrar de novo quando quiser.</string>
+    <string name="chat_vazio">Ninguém escreveu ainda. Que tal começar a conversa?</string>
+    <string name="chat_fora">Você não participa deste chat.</string>
+    <string name="chat_aguarde">Só um instante, ainda estamos confirmando sua entrada no chat.</string>
+    <string name="chat_texto_longo">A mensagem pode ter no máximo 1000 caracteres.</string>
+    <string name="chat_erro_enviar">Não deu para enviar. Confira sua conexão e tente de novo.</string>
+    <string name="chat_erro_entrar">Não deu para entrar no chat agora. Tente de novo.</string>
+    <string name="chat_erro_sair">Não deu para sair do chat agora. Tente de novo.</string>
 
     <!-- 09 Perfil -->
     <string name="per_titulo">Seu perfil</string>
@@ -209,4 +237,212 @@
     <string name="edi_procura">O que você procura aqui</string>
     <string name="edi_salvar">Salvar alterações</string>
     <string name="edi_cancelar">Cancelar</string>
+
+    <!-- 06 Diario -->
+    <string name="dia_titulo">Seu diário</string>
+    <string name="dia_mes_anterior">Mês anterior</string>
+    <string name="dia_proximo_mes">Próximo mês</string>
+    <string name="dia_como_agora">Como está agora?</string>
+    <string name="dia_registrar">Registrar como estou</string>
+    <string name="dia_atualizar">Atualizar registro</string>
+    <string name="dia_salvo">Registro salvo.</string>
+    <string name="dia_apagar">Apagar registro deste dia</string>
+    <string name="dia_apagado">Registro apagado.</string>
+    <string name="dia_futuro">Ainda não dá para registrar um dia que não chegou.</string>
+    <string name="dia_legenda">Legenda dos sentimentos</string>
+    <string name="dia_dom">D</string>
+    <string name="dia_seg">S</string>
+    <string name="dia_ter">T</string>
+    <string name="dia_qua">Q</string>
+    <string name="dia_qui">Q</string>
+    <string name="dia_sex">S</string>
+    <string name="dia_sab">S</string>
+
+    <!-- Foto de perfil -->
+    <string name="foto_alterar">Alterar foto</string>
+    <string name="foto_remover">Remover foto</string>
+    <string name="foto_removida">Foto removida.</string>
+    <string name="foto_descricao">Sua foto de perfil</string>
+    <string name="foto_erro">Não foi possível usar essa imagem. Tente outra.</string>
+    <string name="foto_aviso">A foto fica guardada só neste aparelho e não é enviada para o servidor.</string>
+
+    <!-- Notificacoes -->
+    <string name="not_titulo">Notificações</string>
+    <string name="not_apoio">Escolha o que você quer receber</string>
+    <string name="not_grupo_lembretes">Lembretes e novidades</string>
+    <string name="not_diario">Lembrete do diário</string>
+    <string name="not_diario_desc">Um toque diário para você se registrar</string>
+    <string name="not_direitos">Novidades em Direitos</string>
+    <string name="not_direitos_desc">Quando houver conteúdo novo</string>
+    <string name="not_apoio_chats">Respostas no Apoio</string>
+    <string name="not_apoio_chats_desc">Mensagens dos seus chats</string>
+    <string name="not_bemestar">Dicas de bem-estar</string>
+    <string name="not_bemestar_desc">Mensagens curtas de acolhimento</string>
+    <string name="not_grupo_horarios">Horários</string>
+    <string name="not_horario">Horário do lembrete</string>
+    <string name="not_horario_desc">Quando avisar sobre o diário</string>
+    <string name="not_naoincomodar">Não incomodar</string>
+    <string name="not_naoincomodar_desc">Silencia avisos à noite</string>
+    <string name="not_rodape">Você pode mudar isso quando quiser.</string>
+    <string name="not_pendente">As escolhas ficam salvas, mas o app ainda não envia avisos. Isso será ligado numa próxima etapa.</string>
+    <string name="salvar_alteracoes">Salvar alterações</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="salvo">Alterações salvas.</string>
+
+    <!-- Privacidade e seguranca -->
+    <string name="pri_titulo">Privacidade e segurança</string>
+    <string name="pri_apoio">Você no controle dos seus dados</string>
+    <string name="pri_grupo_conta">Sua conta</string>
+    <string name="pri_senha">Alterar senha</string>
+    <string name="pri_senha_desc">Troque sua senha de acesso</string>
+    <string name="pri_duas_etapas">Verificação em duas etapas</string>
+    <string name="pri_duas_etapas_desc">Mais proteção ao entrar</string>
+    <string name="pri_bloqueio">Bloqueio do app</string>
+    <string name="pri_bloqueio_desc">Use biometria ou PIN</string>
+    <string name="pri_grupo_dados">Seus dados</string>
+    <string name="pri_nome_chats">Mostrar meu nome nos chats</string>
+    <string name="pri_nome_chats_desc">Desligado: você aparece como “Participante”</string>
+    <string name="pri_baixar">Baixar meus dados</string>
+    <string name="pri_baixar_desc">Salve uma cópia de tudo o que o app guarda</string>
+    <string name="pri_excluir">Excluir minha conta</string>
+    <string name="pri_excluir_desc">Apaga seus dados do Nanã</string>
+    <string name="pri_rodape">Seu diário é privado: só você vê.</string>
+    <string name="pri_precisa_conta">Isso depende de uma conta com login, que ainda não existe no app.</string>
+    <string name="pri_exportando">Preparando sua cópia…</string>
+    <string name="pri_exportar_titulo">Meus dados do Nanã</string>
+    <string name="pri_exportar_erro">Não foi possível gerar a cópia.</string>
+    <string name="pri_excluir_titulo">Apagar tudo?</string>
+    <string name="pri_excluir_texto">Isso apaga sua conta, seu perfil, seus interesses, seu diário, as mensagens que você escreveu nos chats e a foto deste aparelho. Não dá para desfazer.
+
+Se quiser guardar uma cópia antes, use "Baixar meus dados".</string>
+    <string name="pri_excluir_confirmar">Apagar tudo</string>
+
+    <!-- Meus dados -->
+    <string name="md_apoio">Tudo o que o Nanã guarda sobre você, num lugar só.</string>
+    <string name="md_conta">Sua conta</string>
+    <string name="md_email">E-mail</string>
+    <string name="md_criada_em">Conta criada em</string>
+    <string name="md_cadastro">Seu cadastro</string>
+    <string name="md_autodeclaracao">Autodeclaração</string>
+    <string name="md_nao_informado">Não informado</string>
+    <string name="md_carregando">Carregando…</string>
+    <string name="md_consentimentos">Consentimentos</string>
+    <string name="md_consentimento_raca">Informar como você se identifica</string>
+    <string name="md_consentido">Você autorizou. Pode retirar quando quiser.</string>
+    <string name="md_nao_consentido">Não autorizado. O Nanã não guarda essa informação.</string>
+    <string name="md_retirar">Retirar autorização</string>
+    <string name="md_retirar_titulo">Retirar autorização?</string>
+    <string name="md_retirar_texto">Sua resposta sobre como você se identifica será apagada do seu cadastro.</string>
+    <string name="md_consentimento_retirado">Autorização retirada. A informação foi apagada.</string>
+    <string name="md_outros">Outros dados</string>
+    <string name="md_diario">Diário</string>
+    <plurals name="md_registros">
+        <item quantity="one">%d registro</item>
+        <item quantity="other">%d registros</item>
+    </plurals>
+    <string name="md_chats">Chats</string>
+    <plurals name="md_chats_qtd">
+        <item quantity="one">%d chat</item>
+        <item quantity="other">%d chats</item>
+    </plurals>
+    <string name="md_foto">Foto de perfil</string>
+    <string name="md_foto_aparelho">Guardada só neste aparelho</string>
+    <string name="md_foto_nenhuma">Nenhuma</string>
+    <string name="md_editar">Editar meus dados</string>
+    <string name="md_rodape">Para apagar sua conta e todos os seus dados, vá em Perfil › Privacidade e segurança.</string>
+
+    <!-- Ajuda e contato -->
+    <string name="aju_titulo">Ajuda e contato</string>
+    <string name="aju_apoio">Estamos aqui para você</string>
+    <string name="aju_busca">Como podemos ajudar?</string>
+    <string name="aju_sem_resultado">Nada encontrado para essa busca.</string>
+    <string name="aju_faq">Perguntas frequentes</string>
+    <string name="aju_q1">Meu diário é privado?</string>
+    <string name="aju_r1">É. Os registros do diário ficam guardados apenas neste aparelho, na área privada do aplicativo. Não são enviados para servidor nenhum e ninguém mais tem acesso a eles. Se você apagar o app, eles somem junto.</string>
+    <string name="aju_q2">Como funciona o Apoio?</string>
+    <string name="aju_r2">O Apoio reúne conversas entre mulheres que estão passando por momentos parecidos. As conversas ainda estão sendo construídas e serão liberadas numa próxima etapa do aplicativo.</string>
+    <string name="aju_q3">De onde vêm os direitos?</string>
+    <string name="aju_r3">Os conteúdos da área de Direitos vêm da legislação brasileira, com a lei indicada em cada card, como a Lei nº 11.108/2005, do acompanhante, e a Lei nº 11.634/2007, do vínculo com a maternidade. O Nanã não substitui orientação jurídica nem acompanhamento de profissionais de saúde.</string>
+    <string name="aju_q4">Como alterar meus dados?</string>
+    <string name="aju_r4">Vá em Perfil e toque em Editar perfil. Lá você muda nome, cidade, momento, filhos e os assuntos que quer encontrar. Para apagar tudo, use Privacidade e segurança e depois Excluir minha conta.</string>
+    <string name="aju_fale">Fale com a gente</string>
+    <string name="aju_mensagem">Enviar mensagem</string>
+    <string name="aju_mensagem_desc">Respondemos em até 2 dias úteis</string>
+    <string name="aju_email">E-mail</string>
+    <string name="aju_email_endereco">ajuda@nana.app</string>
+    <string name="aju_sem_email">Nenhum aplicativo de e-mail encontrado neste aparelho.</string>
+    <string name="aju_crise_titulo">Precisa de ajuda agora?</string>
+    <string name="aju_crise_cvv">CVV: 188</string>
+    <string name="aju_crise_mulher">Central de Atendimento à Mulher: 180</string>
+
+    <!-- Sair da conta -->
+    
+
+    <!--
+      Palavras destacadas em verde nos textos de abertura.
+      Para mudar o destaque, basta editar estas listas: o código procura
+      cada palavra dentro do texto correspondente.
+    -->
+    <string-array name="bv_destaques">
+        <item>sua</item>
+        <item>acolhimento</item>
+        <item>apoio</item>
+    </string-array>
+    <string-array name="prop_destaques">
+        <item>cuidado</item>
+    </string-array>
+
+    <!-- Acesso: entrar e criar conta -->
+    <string name="acc_titulo_entrar">Que bom te ver de novo</string>
+    <string name="acc_titulo_criar">Vamos criar sua conta</string>
+    <string name="acc_apoio_entrar">Entre para continuar de onde parou.</string>
+    <string name="acc_apoio_criar">Sua conta guarda seu perfil e seu diário, para você não perder nada se trocar de celular.</string>
+    <string name="acc_email">E-mail</string>
+    <string name="acc_email_dica">seu@email.com</string>
+    <string name="acc_senha">Senha</string>
+    <string name="acc_senha_dica">Pelo menos 8 caracteres</string>
+    <string name="acc_mostrar_senha">Mostrar senha</string>
+    <string name="acc_ocultar_senha">Ocultar senha</string>
+    <string name="acc_entrar">Entrar</string>
+    <string name="acc_criar">Criar conta</string>
+    <string name="acc_ir_criar">Ainda não tenho conta</string>
+    <string name="acc_ir_entrar">Já tenho conta</string>
+    <string name="acc_esqueci">Esqueci minha senha</string>
+    <string name="acc_recuperar_enviado">Se houver uma conta com esse e-mail, enviamos um link para criar uma senha nova.</string>
+    <string name="acc_informe_email">Informe seu e-mail primeiro.</string>
+
+    <!-- Caixa de privacidade -->
+    <string name="acc_privacidade_aceite">Li e aceito como o Nanã cuida dos meus dados</string>
+    <string name="acc_privacidade_resumo">Seus dados ficam numa conta sua, guardada em servidores do Google no Brasil. Só você vê seu perfil e seu diário. Você pode baixar uma cópia ou apagar tudo quando quiser, em Perfil › Privacidade e segurança.</string>
+    <string name="acc_privacidade_exigida">Para criar a conta, é preciso aceitar como seus dados são tratados.</string>
+
+    <!-- Erros de acesso -->
+    <string name="acc_erro_email">E-mail inválido. Confira se está escrito certo.</string>
+    <string name="acc_erro_senha_fraca">Senha muito fraca. Use pelo menos 8 caracteres, com letra e número.</string>
+    <string name="acc_erro_email_usado">Já existe uma conta com esse e-mail. Tente entrar.</string>
+    <string name="acc_erro_credenciais">E-mail ou senha incorretos.</string>
+    <string name="acc_erro_internet">Sem conexão. Verifique sua internet e tente de novo.</string>
+    <string name="acc_erro_desconhecido">Não deu para concluir agora. Tente de novo em instantes.</string>
+
+    <!-- Verificação de e-mail -->
+    <string name="ver_titulo">Confirme seu e-mail</string>
+    <string name="ver_texto">Enviamos um link para %1$s. Abra seu e-mail e toque no link para confirmar que o endereço é seu.</string>
+    <string name="ver_motivo">Confirmamos o e-mail para garantir que ninguém crie uma conta com o endereço de outra pessoa.</string>
+    <string name="ver_ja_confirmei">Já confirmei</string>
+    <string name="ver_reenviar">Reenviar o e-mail</string>
+    <string name="ver_reenviado">E-mail reenviado. Pode levar alguns minutos.</string>
+    <string name="ver_ainda_nao">Ainda não confirmado. Veja também a caixa de spam.</string>
+    <string name="ver_sair">Usar outro e-mail</string>
+
+    <!-- Consentimento da autodeclaração -->
+    <string name="cad_raca_consentir">Concordo em informar isso ao Nanã</string>
+    <string name="cad_raca_exigida">Para informar como você se identifica, marque o aceite logo abaixo.</string>
+
+    <!-- Sair da conta -->
+    <string name="sair_titulo">Sair da conta?</string>
+    <string name="sair_texto">Seus dados continuam guardados na sua conta. Da próxima vez, basta entrar com o mesmo e-mail.\n\nOs dados guardados neste celular são apagados ao sair.</string>
+    <string name="sair_confirmar">Sair</string>
+
+    <!-- Sincronização -->
+    <string name="sync_erro">Não deu para salvar agora. Vamos tentar de novo quando a conexão voltar.</string>
 </resources>

@@ -6,17 +6,26 @@ enum class CampoCadastro {
 }
 
 /**
- * PONTO DE VALIDAÇÃO PENDENTE
+ * Quais campos do cadastro são obrigatórios.
  *
- * Segundo o documento, "a obrigatoriedade de cada campo ainda deve ser validada".
- * Por isso a regra fica concentrada aqui, para ser ajustada depois da escuta com as mães.
+ * A lista fica concentrada aqui porque o documento "Jornada do Usuário" diz
+ * que a obrigatoriedade "ainda deve ser validada" com as mães. Mudar a regra
+ * é mexer numa linha só.
  *
- * Padrão provisório: só a FASE é necessária, porque a tela inicial personalizada
- * depende dela (documento: "É um dado central para a experiência").
- * Todos os outros campos aparecem como "(opcional)" na interface.
+ * ATENÇÃO: esta lista precisa combinar com as regras do servidor, em
+ * `firestore.rules`. Se um campo for obrigatório aqui e não lá, o app apenas
+ * exige a mais; se for obrigatório lá e não aqui, a gravação é recusada e a
+ * usuária leva um erro sem entender por quê.
+ *
+ * Hoje são obrigatórios:
+ *   FASE  — a tela inicial depende dela para escolher os conteúdos
+ *   IDADE — decisão da equipe
  */
 object RegrasCadastro {
-    val camposObrigatorios: Set<CampoCadastro> = setOf(CampoCadastro.FASE)
+    val camposObrigatorios: Set<CampoCadastro> = setOf(
+        CampoCadastro.FASE,
+        CampoCadastro.IDADE,
+    )
 
     fun eObrigatorio(campo: CampoCadastro): Boolean = campo in camposObrigatorios
 }

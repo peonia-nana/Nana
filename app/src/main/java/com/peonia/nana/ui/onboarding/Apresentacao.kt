@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,10 +23,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -46,7 +49,9 @@ import com.peonia.nana.ui.components.Imagens
 import com.peonia.nana.ui.components.IndicadorPaginas
 import com.peonia.nana.ui.components.LayoutComRodape
 import com.peonia.nana.ui.components.TelaNana
+import com.peonia.nana.ui.components.temImagem
 import com.peonia.nana.ui.components.TextoCentral
+import com.peonia.nana.ui.components.textoComDestaques
 import com.peonia.nana.ui.theme.NanaCores
 
 /** Total de pontos do indicador: 3 telas de apresentação + cadastro. */
@@ -56,12 +61,21 @@ const val TOTAL_PAGINAS_JORNADA = 4
 // 01 – Boas-vindas
 // ---------------------------------------------------------------------------
 @Composable
-fun BoasVindasScreen(aoComecar: () -> Unit) {
+fun BoasVindasScreen(aoComecar: () -> Unit, aoJaTenhoConta: () -> Unit) {
     TelaNana {
         LayoutComRodape(
             rodape = {
                 BotaoPrincipal(stringResource(R.string.bv_comecar), aoComecar)
-                Spacer(Modifier.height(20.dp))
+                TextButton(onClick = aoJaTenhoConta, modifier = Modifier.heightIn(min = 48.dp)) {
+                    Text(
+                        stringResource(R.string.acc_ir_entrar),
+                        color = NanaCores.Verde,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                        ),
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
                 IndicadorPaginas(TOTAL_PAGINAS_JORNADA, 0)
             },
         ) {
@@ -83,7 +97,10 @@ fun BoasVindasScreen(aoComecar: () -> Unit) {
             )
             Spacer(Modifier.height(20.dp))
             TextoCentral(
-                stringResource(R.string.bv_texto),
+                textoComDestaques(
+                    texto = stringResource(R.string.bv_texto),
+                    destaques = stringArrayResource(R.array.bv_destaques).toList(),
+                ),
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
@@ -108,22 +125,27 @@ fun PropositoScreen(aoContinuar: () -> Unit, aoVoltar: () -> Unit) {
         ) {
             BotaoVoltar(aoVoltar)
             ImagemNana(
-                nome = Imagens.PROPOSITO,
+                // Enquanto não houver uma ilustração própria para esta tela,
+                // usa a mesma das boas-vindas, como no protótipo.
+                nome = if (temImagem(Imagens.PROPOSITO)) Imagens.PROPOSITO else Imagens.BOAS_VINDAS,
                 descricao = stringResource(R.string.ilustracao_proposito),
                 modifier = Modifier
                     .size(170.dp)
                     .align(Alignment.CenterHorizontally),
             )
             Spacer(Modifier.height(16.dp))
+            val primeiraLinha = stringResource(R.string.prop_titulo_1)
+            val segundaLinha = textoComDestaques(
+                texto = stringResource(R.string.prop_titulo_2),
+                destaques = stringArrayResource(R.array.prop_destaques).toList(),
+            )
             Text(
                 buildAnnotatedString {
-                    withStyle(SpanStyle(color = NanaCores.Texto)) {
-                        append(stringResource(R.string.prop_titulo_1))
-                    }
+                    withStyle(SpanStyle(color = NanaCores.Texto)) { append(primeiraLinha) }
                     append("\n")
-                    withStyle(SpanStyle(color = NanaCores.Ameixa)) {
-                        append(stringResource(R.string.prop_titulo_2))
-                    }
+                    // A cor roxa vale para a linha toda; as palavras em verde
+                    // trazem a própria cor e sobrescrevem este trecho.
+                    withStyle(SpanStyle(color = NanaCores.Ameixa)) { append(segundaLinha) }
                 },
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.semantics { heading() },

@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -240,13 +243,20 @@ private fun OpcaoFase(texto: String, selecionada: Boolean, aoSelecionar: () -> U
 // ---------------------------------------------------------------------------
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun CadastroPerfilScreen(vm: CadastroViewModel, aoConcluir: () -> Unit, aoVoltar: () -> Unit) {
+fun CadastroPerfilScreen(
+    vm: CadastroViewModel,
+    aoConcluir: () -> Unit,
+    aoVoltar: () -> Unit,
+    aoAvisar: (Int) -> Unit,
+) {
     val s by vm.estado.collectAsStateWithLifecycle()
     val erroObrigatorio = stringResource(R.string.erro_campo_obrigatorio)
     TelaNana {
         LayoutComRodape(
             rodape = {
-                RodapePasso(stringResource(R.string.cad_entrar)) { vm.concluir(aoConcluir) }
+                RodapePasso(stringResource(R.string.cad_entrar)) {
+                    vm.concluir(aoConcluir = aoConcluir, aoFalhar = aoAvisar)
+                }
             },
         ) {
             CabecalhoPasso(stringResource(R.string.cad_perfil_titulo), PassoCadastro.PERFIL, aoVoltar)
@@ -324,11 +334,47 @@ fun CadastroPerfilScreen(vm: CadastroViewModel, aoConcluir: () -> Unit, aoVoltar
                     )
                 }
             }
-            if (CampoCadastro.AUTODECLARACAO in s.camposComErro) MensagemErro(erroObrigatorio)
+            if (s.autodeclaracao != null) {
+                Spacer(Modifier.height(10.dp))
+                CaixaDeAceite(
+                    texto = stringResource(R.string.cad_raca_consentir),
+                    marcada = s.consentiuRaca,
+                    aoMudar = vm::alternarConsentimentoRaca,
+                )
+            }
+            if (CampoCadastro.AUTODECLARACAO in s.camposComErro) {
+                MensagemErro(stringResource(R.string.cad_raca_exigida))
+            }
             Spacer(Modifier.height(20.dp))
 
             CartaoAviso(titulo = null, texto = stringResource(R.string.cad_perfil_nota))
             Spacer(Modifier.height(16.dp))
         }
+    }
+}
+
+/**
+ * Caixa de aceite para um dado sensível.
+ *
+ * Fica junto do campo, e não escondida numa tela de termos, porque a LGPD
+ * exige que o consentimento para dado sensível seja específico e destacado
+ * (art. 11, I). Um aceite genérico lá no começo não serviria.
+ */
+@Composable
+private fun CaixaDeAceite(texto: String, marcada: Boolean, aoMudar: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .toggleable(value = marcada, role = Role.Checkbox, onValueChange = { aoMudar() }),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Checkbox(
+            checked = marcada,
+            onCheckedChange = null,
+            colors = CheckboxDefaults.colors(checkedColor = NanaCores.Ameixa),
+        )
+        Spacer(Modifier.width(10.dp))
+        Text(texto, style = MaterialTheme.typography.bodyMedium, color = NanaCores.Texto)
     }
 }

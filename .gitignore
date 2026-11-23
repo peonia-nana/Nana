@@ -1,7 +1,28 @@
+# Build
 .gradle/
 build/
 app/build/
+.kotlin/
+.cxx/
+.externalNativeBuild/
+captures/
+
+# Arquivos de cada máquina (NÃO devem ir para o GitHub)
 local.properties
+
+# Android Studio / IntelliJ
 .idea/
 *.iml
-.kotlin/
+
+# Saídas compiladas
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# O wrapper do Gradle precisa ir junto, senão o projeto não compila em outra máquina
+!gradle/wrapper/gradle-wrapper.jar

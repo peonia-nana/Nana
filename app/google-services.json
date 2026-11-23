@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "135519092248",
+    "project_id": "nana-5e62a",
+    "storage_bucket": "nana-5e62a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135519092248:android:03236e175c84e552968d6d",
+        "android_client_info": {
+          "package_name": "com.peonia.nana"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4psDD6yAqY_b4_K0o_F3G1FrjF27mWcw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

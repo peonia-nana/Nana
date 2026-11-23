@@ -3,9 +3,13 @@ package com.peonia.nana.ui.cadastro
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.peonia.nana.R
 import com.peonia.nana.data.Autodeclaracao
 import com.peonia.nana.data.CampoCadastro
+import com.peonia.nana.data.ConsentimentoRepository
 import com.peonia.nana.data.FaseMaternidade
+import com.peonia.nana.data.FinalidadeConsentimento
+import com.peonia.nana.data.Nuvem
 import com.peonia.nana.data.Interesse
 import com.peonia.nana.data.Perfil
 import com.peonia.nana.data.PerfilRepository
@@ -47,11 +51,18 @@ data class CadastroUiState(
     val autodeclaracao: Autodeclaracao? = null,
     val camposComErro: Set<CampoCadastro> = emptySet(),
     val salvando: Boolean = false,
+    /**
+     * Aceite para informar a autodeclaração racial. Sem ele o servidor recusa
+     * o campo: é dado sensível (LGPD, art. 11, I).
+     */
+    val consentiuRaca: Boolean = false,
+    val erroAoSalvar: Boolean = false,
 )
 
 class CadastroViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val repositorio = PerfilRepository(app)
+    private val repositorio = PerfilRepository()
+    private val consentimentos = ConsentimentoRepository()
 
     private val _estado = MutableStateFlow(CadastroUiState())
     val estado: StateFlow<CadastroUiState> = _estado.asStateFlow()
@@ -83,10 +94,18 @@ class CadastroViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun alternarAutodeclaracao(a: Autodeclaracao) = _estado.update {
+        val nova = if (it.autodeclaracao == a) null else a
         it.copy(
-            autodeclaracao = if (it.autodeclaracao == a) null else a,
+            autodeclaracao = nova,
+            // Desmarcar a opção também derruba o aceite: não faz sentido
+            // guardar consentimento para um dado que ela não quis informar.
+            consentiuRaca = if (nova == null) false else it.consentiuRaca,
             camposComErro = it.camposComErro - CampoCadastro.AUTODECLARACAO,
         )
+    }
+
+    fun alternarConsentimentoRaca() = _estado.update {
+        it.copy(consentiuRaca = !it.consentiuRaca, camposComErro = it.camposComErro - CampoCadastro.AUTODECLARACAO)
     }
 
     /**
@@ -102,26 +121,58 @@ class CadastroViewModel(app: Application) : AndroidViewModel(app) {
         return faltando.isEmpty()
     }
 
-    fun concluir(aoConcluir: () -> Unit) {
-        if (_estado.value.salvando) return
+    /**
+     * Grava o cadastro no banco.
+     *
+     * A ordem importa: o consentimento tem que estar registrado **antes** do
+     * perfil, porque as regras do servidor consultam o consentimento no
+     * momento da gravação. Na ordem invertida, a gravação é recusada.
+     */
+    fun concluir(aoConcluir: () -> Unit, aoFalhar: (Int) -> Unit) {
+        val atual = _estado.value
+        if (atual.salvando) return
         if (!PassoCadastro.entries.all { validarPasso(it) }) return
-        _estado.update { it.copy(salvando = true) }
+
+        // Dado sensível sem aceite: barra aqui para a mãe entender o motivo,
+        // em vez de levar um erro de permissão vindo do servidor.
+        if (atual.autodeclaracao != null && !atual.consentiuRaca) {
+            _estado.update {
+                it.copy(camposComErro = it.camposComErro + CampoCadastro.AUTODECLARACAO)
+            }
+            aoFalhar(R.string.cad_raca_exigida)
+            return
+        }
+
+        val uid = Nuvem.uid
+        if (uid == null) {
+            aoFalhar(R.string.acc_erro_desconhecido)
+            return
+        }
+
+        _estado.update { it.copy(salvando = true, erroAoSalvar = false) }
         viewModelScope.launch {
             val s = _estado.value
-            repositorio.salvar(
-                Perfil(
-                    nome = s.nome,
-                    idade = s.idade.toIntOrNull(),
-                    cidade = s.cidade,
-                    fase = s.fase,
-                    interesses = s.interesses,
-                    autodeclaracao = s.autodeclaracao,
-                    nomesBebes = s.nomesBebes,
-                    quantidadeFilhos = s.quantidadeFilhos,
-                ),
-            )
-            _estado.update { it.copy(salvando = false) }
-            aoConcluir()
+            val resultado = runCatching {
+                if (s.autodeclaracao != null) {
+                    consentimentos.registrar(uid, FinalidadeConsentimento.RACA_AUTODECLARADA, true)
+                }
+                repositorio.salvar(
+                    uid,
+                    Perfil(
+                        nome = s.nome,
+                        idade = s.idade.toIntOrNull(),
+                        cidade = s.cidade,
+                        fase = s.fase,
+                        interesses = s.interesses,
+                        autodeclaracao = s.autodeclaracao,
+                        nomesBebes = s.nomesBebes,
+                        quantidadeFilhos = s.quantidadeFilhos,
+                    ),
+                )
+                repositorio.registrarAuditoria(uid, "CADASTRO_CRIADO")
+            }
+            _estado.update { it.copy(salvando = false, erroAoSalvar = resultado.isFailure) }
+            if (resultado.isSuccess) aoConcluir() else aoFalhar(R.string.sync_erro)
         }
     }
 

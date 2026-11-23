@@ -47,7 +47,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -55,6 +60,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.peonia.nana.R
@@ -69,16 +75,25 @@ import com.peonia.nana.ui.theme.NanaCores
  */
 @SuppressLint("DiscouragedApi")
 @Composable
+fun idDaImagem(nome: String): Int {
+    val contexto = LocalContext.current
+    return remember(nome) {
+        contexto.resources.getIdentifier(nome, "drawable", contexto.packageName)
+    }
+}
+
+/** True quando a equipe já colocou o arquivo em res/drawable. */
+@Composable
+fun temImagem(nome: String): Boolean = idDaImagem(nome) != 0
+
+@Composable
 fun ImagemNana(
     nome: String,
     descricao: String?,
     modifier: Modifier = Modifier,
     escala: ContentScale = ContentScale.Fit,
 ) {
-    val contexto = LocalContext.current
-    val id = remember(nome) {
-        contexto.resources.getIdentifier(nome, "drawable", contexto.packageName)
-    }
+    val id = idDaImagem(nome)
     if (id != 0) {
         Image(
             painter = painterResource(id),
@@ -228,6 +243,7 @@ fun CampoTexto(
     tipoTeclado: KeyboardType = KeyboardType.Text,
     acao: ImeAction = ImeAction.Next,
     erro: String? = null,
+    transformacao: VisualTransformation = VisualTransformation.None,
 ) {
     OutlinedTextField(
         value = valor,
@@ -235,6 +251,7 @@ fun CampoTexto(
         modifier = modifier.fillMaxWidth(),
         placeholder = { Text(placeholder) },
         singleLine = true,
+        visualTransformation = transformacao,
         isError = erro != null,
         supportingText = erro?.let { { Text(it) } },
         keyboardOptions = KeyboardOptions(keyboardType = tipoTeclado, imeAction = acao),
@@ -287,6 +304,17 @@ fun IconeArredondado(content: @Composable () -> Unit) {
             .background(NanaCores.IconeFundo, CircleShape),
         contentAlignment = Alignment.Center,
     ) { content() }
+}
+
+@Composable
+fun TextoCentral(texto: AnnotatedString, modifier: Modifier = Modifier) {
+    Text(
+        texto,
+        modifier = modifier,
+        style = MaterialTheme.typography.bodyMedium,
+        textAlign = TextAlign.Center,
+        color = NanaCores.Texto,
+    )
 }
 
 @Composable
@@ -448,5 +476,37 @@ fun CabecalhoVoltar(titulo: String, aoVoltar: () -> Unit, modifier: Modifier = M
             color = NanaCores.AmeixaEscura,
             modifier = Modifier.semantics { heading() },
         )
+    }
+}
+
+/**
+ * Monta um texto com algumas palavras em destaque, na cor verde do Nanã.
+ *
+ * As palavras vêm de um `string-array` em strings.xml, então a equipe muda o
+ * destaque sem mexer em código. A busca ignora maiúsculas e respeita limites
+ * de palavra, para "apoio" não pintar o "apoiar" de outra frase.
+ */
+@Composable
+fun textoComDestaques(
+    texto: String,
+    destaques: List<String>,
+    cor: Color = NanaCores.Verde,
+): AnnotatedString = buildAnnotatedString {
+    val marcados = BooleanArray(texto.length)
+    destaques.filter { it.isNotBlank() }.forEach { palavra ->
+        Regex("\\b${Regex.escape(palavra)}\\b", RegexOption.IGNORE_CASE)
+            .findAll(texto)
+            .forEach { achado ->
+                for (i in achado.range) marcados[i] = true
+            }
+    }
+    var i = 0
+    while (i < texto.length) {
+        val destacado = marcados[i]
+        var fim = i
+        while (fim < texto.length && marcados[fim] == destacado) fim++
+        val trecho = texto.substring(i, fim)
+        if (destacado) withStyle(SpanStyle(color = cor)) { append(trecho) } else append(trecho)
+        i = fim
     }
 }

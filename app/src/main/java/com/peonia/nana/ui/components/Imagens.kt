@@ -15,11 +15,7 @@ object Imagens {
      */
     const val FUNDO_FLORES = "fundo_flores"
 
-    /**
-     * Fundo de flores mais forte, guardado para a tela de Chat.
-     * Ainda não está em uso: essa tela depende de um servidor e não faz
-     * parte do app nesta etapa.
-     */
+    /** Fundo de flores mais forte, usado na tela de Chat. */
     const val FUNDO_CHAT = "fundo_chat"
 
     /** Tela 01: ilustração principal das boas-vindas. */
@@ -27,6 +23,12 @@ object Imagens {
 
     /** Tela 02: ilustração do propósito. */
     const val PROPOSITO = "ilustracao_proposito"
+
+    /** Fotos dos temas na tela de Direitos. */
+    const val DIREITO_ACOMPANHANTE = "direito_acompanhante"
+    const val DIREITO_DIGNIDADE = "direito_dignidade"
+    const val DIREITO_VINCULO = "direito_vinculo"
+    const val DIREITO_POS_PARTO = "direito_pos_parto"
 
     /** Tela 05: ícones do "Como você está hoje?". */
     const val HUMOR_BEM = "humor_bem"

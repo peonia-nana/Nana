@@ -23,6 +23,18 @@ object NanaCores {
     val FolhaEscura = Color(0xFFD892A6)
     val Branco = Color(0xFFFFFFFF)
     val Erro = Color(0xFFB3261E)
+
+    /** Verde de destaque, usado em palavras-chave dos textos de abertura. */
+    val Verde = Color(0xFF698910)
+}
+
+/** Cores dos sentimentos, usadas nas bolinhas do calendário e na legenda do diário. */
+object HumorCores {
+    val Bem = Color(0xFFF2A3C0)
+    val Calma = Color(0xFFB9A6E0)
+    val Ansiosa = Color(0xFFF0B46A)
+    val Cansada = Color(0xFF7FB2E5)
+    val Triste = Color(0xFF7B4FA8)
 }
 
 private val esquemaNana = lightColorScheme(

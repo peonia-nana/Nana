@@ -29,6 +29,18 @@ import com.peonia.nana.data.FaseMaternidade
 import com.peonia.nana.data.Interesse
 import com.peonia.nana.data.Perfil
 import com.peonia.nana.data.QuantidadeFilhos
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.peonia.nana.data.FotoPerfil
+import com.peonia.nana.ui.components.AvatarPerfil
+import kotlinx.coroutines.launch
 import com.peonia.nana.ui.components.BotaoPrincipal
 import com.peonia.nana.ui.components.CabecalhoVoltar
 import com.peonia.nana.ui.components.CampoTexto
@@ -55,7 +67,25 @@ fun EditarPerfilScreen(
     perfil: Perfil,
     aoSalvar: (Perfil) -> Unit,
     aoCancelar: () -> Unit,
+    aoAvisar: (Int) -> Unit,
 ) {
+    val contexto = LocalContext.current
+    val escopo = rememberCoroutineScope()
+    val versaoFoto by FotoPerfil.versao.collectAsStateWithLifecycle()
+    val temFoto = remember(versaoFoto) { FotoPerfil.existe(contexto) }
+
+    // Seletor de fotos do Android: não pede permissão de acesso à galeria,
+    // e só a imagem escolhida chega ao aplicativo.
+    val seletorDeFoto = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia(),
+    ) { uri ->
+        if (uri != null) {
+            escopo.launch {
+                if (!FotoPerfil.salvar(contexto, uri)) aoAvisar(R.string.foto_erro)
+            }
+        }
+    }
+
     var nome by rememberSaveable { mutableStateOf(perfil.nome) }
     var cidade by rememberSaveable { mutableStateOf(perfil.cidade) }
     var faseNome by rememberSaveable { mutableStateOf(perfil.fase?.name ?: "") }
@@ -94,10 +124,48 @@ fun EditarPerfilScreen(
         ) {
             CabecalhoVoltar(stringResource(R.string.edi_titulo), aoCancelar)
             Spacer(Modifier.height(16.dp))
-            AvatarInicial(
+            AvatarPerfil(
                 nome = nome,
                 tamanho = 80,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
+            TextButton(
+                onClick = {
+                    seletorDeFoto.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                    )
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            ) {
+                Text(
+                    stringResource(R.string.foto_alterar),
+                    color = NanaCores.Ameixa,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                )
+            }
+            if (temFoto) {
+                TextButton(
+                    onClick = {
+                        escopo.launch {
+                            FotoPerfil.remover(contexto)
+                            aoAvisar(R.string.foto_removida)
+                        }
+                    },
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                ) {
+                    Text(
+                        stringResource(R.string.foto_remover),
+                        color = NanaCores.TextoSuave,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            }
+            Text(
+                stringResource(R.string.foto_aviso),
+                style = MaterialTheme.typography.bodySmall,
+                color = NanaCores.TextoSuave,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(20.dp))
 

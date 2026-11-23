@@ -16,17 +16,15 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -37,12 +35,14 @@ import com.peonia.nana.data.Perfil
 import com.peonia.nana.data.TemaDireito
 import com.peonia.nana.ui.apoio.ApoioScreen
 import com.peonia.nana.ui.components.FundoNana
+import com.peonia.nana.ui.diario.DiarioScreen
+import com.peonia.nana.ui.diario.DiarioViewModel
 import com.peonia.nana.ui.direitos.DireitoDetalheScreen
 import com.peonia.nana.ui.direitos.DireitosScreen
 import com.peonia.nana.ui.inicio.InicioScreen
 import com.peonia.nana.ui.perfil.PerfilScreen
 import com.peonia.nana.ui.theme.NanaCores
-import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 /** Abas da barra inferior, na ordem do protótipo. */
 private enum class Aba(val rota: String, val rotulo: Int, val icone: ImageVector) {
@@ -57,38 +57,31 @@ private const val ROTA_DIREITO_DETALHE = "direito/{tema}"
 
 /**
  * Área principal do app: o fundo, a barra inferior e as telas de cada aba.
- *
- * A aba Diário continua mostrando o aviso de próxima etapa, porque essa tela
- * ainda não foi definida.
+ * As telas que não têm barra inferior (Chat, Editar perfil, Notificações,
+ * Privacidade, Ajuda) ficam fora daqui, em [com.peonia.nana.ui.NanaApp].
  */
 @Composable
 fun PrincipalScreen(
     perfil: Perfil,
+    aoAvisar: (Int) -> Unit,
     aoEditarPerfil: () -> Unit,
+    aoAbrirNotificacoes: () -> Unit,
+    aoAbrirPrivacidade: () -> Unit,
+    aoAbrirAjuda: () -> Unit,
+    aoAbrirMeusDados: () -> Unit,
+    aoSair: () -> Unit,
+    aoAbrirChat: (String) -> Unit,
     nav: NavHostController = rememberNavController(),
 ) {
-    val snackbar = remember { SnackbarHostState() }
-    val escopo = rememberCoroutineScope()
-    val aviso = stringResource(R.string.proxima_etapa_aviso)
-    val mostrarAviso: () -> Unit = {
-        escopo.launch {
-            snackbar.currentSnackbarData?.dismiss()
-            snackbar.showSnackbar(aviso)
-        }
-    }
-
     val entrada by nav.currentBackStackEntryAsState()
     val rotaAtual = entrada?.destination?.route
-    val abaAtual = when {
-        rotaAtual == ROTA_DIREITO_DETALHE -> Aba.DIREITOS
+    val abaAtual = when (rotaAtual) {
+        ROTA_DIREITO_DETALHE -> Aba.DIREITOS
         else -> Aba.entries.firstOrNull { it.rota == rotaAtual } ?: Aba.INICIO
     }
 
     val irPara: (Aba) -> Unit = { aba ->
-        if (aba == Aba.DIARIO) {
-            // Tela ainda não definida: mantém a aba atual e avisa.
-            mostrarAviso()
-        } else if (aba != abaAtual || rotaAtual == ROTA_DIREITO_DETALHE) {
+        if (aba != abaAtual || rotaAtual == ROTA_DIREITO_DETALHE) {
             nav.navigate(aba.rota) {
                 popUpTo(Aba.INICIO.rota) { inclusive = false }
                 launchSingleTop = true
@@ -104,7 +97,6 @@ fun PrincipalScreen(
         FundoNana()
         Scaffold(
             containerColor = Color.Transparent,
-            snackbarHost = { SnackbarHost(snackbar) },
             bottomBar = {
                 NavigationBar(containerColor = NanaCores.Branco) {
                     Aba.entries.forEach { aba ->
@@ -131,16 +123,23 @@ fun PrincipalScreen(
                 modifier = Modifier.padding(padding),
             ) {
                 composable(Aba.INICIO.rota) {
+                    // O check-in da tela inicial grava no mesmo diário, para
+                    // as duas telas nunca mostrarem respostas diferentes.
+                    val diarioVm: DiarioViewModel = viewModel()
+                    val registros by diarioVm.registros.collectAsStateWithLifecycle()
                     InicioScreen(
                         perfil = perfil,
-                        aoAvisar = mostrarAviso,
+                        humorDeHoje = registros[LocalDate.now()],
+                        aoRegistrarHumor = { humor -> diarioVm.registrarHoje(humor, aoAvisar) },
+                        aoAvisar = { aoAvisar(R.string.proxima_etapa_aviso) },
                         aoAbrirDireitos = { irPara(Aba.DIREITOS) },
                     )
                 }
+                composable(Aba.DIARIO.rota) {
+                    DiarioScreen(aoAvisar = aoAvisar)
+                }
                 composable(Aba.DIREITOS.rota) {
-                    DireitosScreen(
-                        aoAbrirTema = { tema -> nav.navigate("direito/${tema.name}") },
-                    )
+                    DireitosScreen(aoAbrirTema = { tema -> nav.navigate("direito/${tema.name}") })
                 }
                 composable(ROTA_DIREITO_DETALHE) { entradaDetalhe ->
                     val tema = TemaDireito.porNome(entradaDetalhe.arguments?.getString("tema"))
@@ -151,13 +150,18 @@ fun PrincipalScreen(
                     }
                 }
                 composable(Aba.APOIO.rota) {
-                    ApoioScreen(aoAvisar = mostrarAviso)
+                    ApoioScreen(aoAbrirChat = aoAbrirChat, aoAvisar = aoAvisar)
                 }
                 composable(Aba.PERFIL.rota) {
                     PerfilScreen(
                         perfil = perfil,
                         aoEditar = aoEditarPerfil,
-                        aoAvisar = mostrarAviso,
+                        aoAbrirNotificacoes = aoAbrirNotificacoes,
+                        aoAbrirPrivacidade = aoAbrirPrivacidade,
+                        aoAbrirAjuda = aoAbrirAjuda,
+                        aoAbrirMeusDados = aoAbrirMeusDados,
+                        aoSair = aoSair,
+                        aoAvisar = aoAvisar,
                     )
                 }
             }

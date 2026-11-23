@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Só a pasta de exportações, dentro do cache do app, pode ser compartilhada.
+  Nada mais do aparelho fica acessível por este provedor.
+-->
+<paths>
+    <cache-path name="exportacoes" path="exportacoes/" />
+</paths>

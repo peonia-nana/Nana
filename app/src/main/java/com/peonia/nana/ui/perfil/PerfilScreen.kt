@@ -1,9 +1,7 @@
 package com.peonia.nana.ui.perfil
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -13,9 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -25,11 +21,16 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -37,9 +38,9 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.peonia.nana.R
 import com.peonia.nana.data.Perfil
+import com.peonia.nana.ui.components.AvatarPerfil
 import com.peonia.nana.ui.components.ChipNana
 import com.peonia.nana.ui.components.IconeArredondado
 import com.peonia.nana.ui.components.LinhaLista
@@ -49,18 +50,23 @@ import com.peonia.nana.ui.theme.NanaCores
 /**
  * 09 – Perfil.
  *
- * Os itens do menu (Meus dados, Notificações, Privacidade e segurança,
- * Ajuda e contato) e "Sair da conta" aparecem no protótipo, mas as telas
- * correspondentes ainda não foram desenhadas, e o app não tem conta nem login.
- * Por isso eles mostram o aviso de próxima etapa.
+ * Meus dados, Notificações, Privacidade e segurança e Ajuda e contato abrem
+ * as telas correspondentes. "Sair da conta" pede confirmação antes de sair.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PerfilScreen(
     perfil: Perfil,
     aoEditar: () -> Unit,
-    aoAvisar: () -> Unit,
+    aoAbrirNotificacoes: () -> Unit,
+    aoAbrirPrivacidade: () -> Unit,
+    aoAbrirAjuda: () -> Unit,
+    aoAbrirMeusDados: () -> Unit,
+    aoSair: () -> Unit,
+    aoAvisar: (Int) -> Unit,
 ) {
+    var confirmandoSaida by remember { mutableStateOf(false) }
+
     Column(
         Modifier
             .fillMaxSize()
@@ -84,7 +90,7 @@ fun PerfilScreen(
                 Modifier.padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                AvatarInicial(perfil.nome)
+                AvatarPerfil(perfil.nome)
                 Spacer(Modifier.height(10.dp))
                 Text(
                     perfil.nome.ifBlank { stringResource(R.string.per_sem_nome) },
@@ -135,32 +141,32 @@ fun PerfilScreen(
             LinhaLista(
                 titulo = stringResource(R.string.per_meus_dados),
                 descricao = null,
-                aoTocar = aoAvisar,
+                aoTocar = aoAbrirMeusDados,
                 icone = { IconeMenu { Icon(Icons.Outlined.Person, null, tint = NanaCores.Ameixa) } },
             )
             LinhaLista(
                 titulo = stringResource(R.string.per_notificacoes),
                 descricao = null,
-                aoTocar = aoAvisar,
+                aoTocar = aoAbrirNotificacoes,
                 icone = { IconeMenu { Icon(Icons.Outlined.Notifications, null, tint = NanaCores.Ameixa) } },
             )
             LinhaLista(
                 titulo = stringResource(R.string.per_privacidade),
                 descricao = null,
-                aoTocar = aoAvisar,
+                aoTocar = aoAbrirPrivacidade,
                 icone = { IconeMenu { Icon(Icons.Outlined.Lock, null, tint = NanaCores.Ameixa) } },
             )
             LinhaLista(
                 titulo = stringResource(R.string.per_ajuda),
                 descricao = null,
-                aoTocar = aoAvisar,
+                aoTocar = aoAbrirAjuda,
                 icone = { IconeMenu { Icon(Icons.Outlined.HelpOutline, null, tint = NanaCores.Ameixa) } },
             )
         }
 
         Spacer(Modifier.height(16.dp))
         TextButton(
-            onClick = aoAvisar,
+            onClick = { confirmandoSaida = true },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .heightIn(min = 48.dp),
@@ -173,6 +179,13 @@ fun PerfilScreen(
         }
         Spacer(Modifier.height(16.dp))
     }
+
+    if (confirmandoSaida) {
+        DialogoSair(
+            aoConfirmar = { confirmandoSaida = false; aoSair() },
+            aoCancelar = { confirmandoSaida = false },
+        )
+    }
 }
 
 @Composable
@@ -180,22 +193,24 @@ private fun IconeMenu(content: @Composable () -> Unit) {
     IconeArredondado(content)
 }
 
-/** Círculo com a primeira letra do nome. Não há foto de perfil no app. */
 @Composable
-fun AvatarInicial(nome: String, tamanho: Int = 72, modifier: Modifier = Modifier) {
-    val letra = nome.trim().firstOrNull()?.uppercase() ?: ""
-    Box(
-        modifier
-            .size(tamanho.dp)
-            .background(NanaCores.IconeFundo, CircleShape),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            letra,
-            style = MaterialTheme.typography.headlineSmall.copy(fontSize = (tamanho / 2.6).sp),
-            color = NanaCores.Ameixa,
-        )
-    }
+private fun DialogoSair(aoConfirmar: () -> Unit, aoCancelar: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = aoCancelar,
+        title = { Text(stringResource(R.string.sair_titulo)) },
+        text = { Text(stringResource(R.string.sair_texto)) },
+        confirmButton = {
+            TextButton(onClick = aoConfirmar) {
+                Text(stringResource(R.string.sair_confirmar), color = NanaCores.Ameixa)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = aoCancelar) {
+                Text(stringResource(R.string.cancelar), color = NanaCores.TextoSuave)
+            }
+        },
+        containerColor = NanaCores.Branco,
+    )
 }
 
 /** Monta a linha "Gestação · 1º filho · Cidade" com o que a usuária informou. */
