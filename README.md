@@ -1,4 +1,4 @@
-# 💜 Nanã — Acolhendo quem acolhe
+# 💜 Nanã — Acolher quem acolhe
 
 > Tecnologia humanizada, acolhimento nas madrugadas e proteção para a saúde materno-infantil.
 
