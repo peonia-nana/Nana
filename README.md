@@ -11,7 +11,7 @@ A *Nanã* é um aplicativo mobile focado no acolhimento, na escuta ativa e na se
 
 ## 📱 Principais Funcionalidades (O que o app oferece)
 
-* *🌙 Modo Madrugada:* Uma interface de luz baixa e tons quentes, desenvolvida para ser operada com apenas uma mão enquanto a mãe amamenta, acompanhada de sons suaves para acalmar o bebê e proteger o sono.
+
 * *📓 Diário de Rotina e Sintomas:* Um espaço seguro e sem julgamentos para registrar humor, dores e sinais físicos do dia a dia, transformando o cotidiano em relatórios claros para as consultas médicas.
 * *⚖️ Guia de Direitos e Plano de Parto:* Ferramentas para empoderar a parturiente, garantindo o conhecimento prévio dos seus direitos legais e o respeito à sua autonomia nos hospitais.
 * *🚨 Apoio de Emergência e Rede de Afeto:* Acesso rápido ao CVV (Centro de Valorização da Vida) e a contatos de confiança para os momentos de sobrecarga emocional severa.
