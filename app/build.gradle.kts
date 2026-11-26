@@ -52,6 +52,8 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.datastore.preferences)
+    // Avisos em segundo plano: lembrete do diário e conferência de novidades
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Firebase: autenticação e banco de dados
     implementation(platform(libs.firebase.bom))

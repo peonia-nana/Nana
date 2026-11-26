@@ -1,5 +1,15 @@
 package com.peonia.nana.ui.perfil
 
+import android.Manifest
+import android.app.TimePickerDialog
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import com.peonia.nana.notificacoes.Agendador
+import java.time.LocalTime
 import android.app.Application
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -104,6 +114,8 @@ class PreferenciasViewModel(app: Application) : AndroidViewModel(app) {
         val p = _rascunho.value ?: return
         viewModelScope.launch {
             repositorio.salvar(p)
+            // Liga ou desliga os avisos conforme o que ficou salvo.
+            Agendador.aplicar(getApplication(), p)
             aoConcluir()
         }
     }
@@ -243,12 +255,26 @@ fun NotificacoesScreen(
     val rascunho by vm.rascunho.collectAsStateWithLifecycle()
     LaunchedEffect(salvas) { salvas?.let { vm.comecarEdicao(it) } }
     val p = rascunho ?: return
+    val contexto = LocalContext.current
+
+    // Android 13 ou mais novo: avisos precisam da autorização da usuária.
+    val pedirPermissao = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { concedida -> if (!concedida) aoAvisar(R.string.not_sem_permissao) }
 
     TelaNana {
         LayoutComRodape(
             rodape = {
                 RodapeSalvarCancelar(
                     aoSalvar = {
+                        val algumLigado = p.lembreteDiario || p.novidadesDireitos ||
+                            p.respostasApoio || p.dicasBemEstar
+                        if (algumLigado && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                            ContextCompat.checkSelfPermission(contexto, Manifest.permission.POST_NOTIFICATIONS) !=
+                            PackageManager.PERMISSION_GRANTED
+                        ) {
+                            pedirPermissao.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
                         vm.salvar {
                             aoAvisar(R.string.salvo)
                             aoVoltar()
@@ -310,7 +336,19 @@ fun NotificacoesScreen(
                     titulo = stringResource(R.string.not_horario),
                     descricao = stringResource(R.string.not_horario_desc),
                     valor = p.horarioLembrete,
-                    aoTocar = { aoAvisar(R.string.not_pendente) },
+                    aoTocar = {
+                        val atual = runCatching { LocalTime.parse(p.horarioLembrete) }
+                            .getOrDefault(LocalTime.of(20, 0))
+                        TimePickerDialog(
+                            contexto,
+                            { _, hora, minuto ->
+                                vm.alterar { it.copy(horarioLembrete = "%02d:%02d".format(hora, minuto)) }
+                            },
+                            atual.hour,
+                            atual.minute,
+                            true,
+                        ).show()
+                    },
                 )
                 Separador()
                 LinhaInterruptor(
@@ -331,7 +369,7 @@ fun NotificacoesScreen(
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                stringResource(R.string.not_pendente),
+                stringResource(R.string.not_info),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodySmall,

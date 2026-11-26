@@ -87,6 +87,8 @@ fun EditarPerfilScreen(
     }
 
     var nome by rememberSaveable { mutableStateOf(perfil.nome) }
+    // Nome é obrigatório (RegrasCadastro), também ao editar.
+    var nomeComErro by rememberSaveable { mutableStateOf(false) }
     var cidade by rememberSaveable { mutableStateOf(perfil.cidade) }
     var faseNome by rememberSaveable { mutableStateOf(perfil.fase?.name ?: "") }
     var filhosNome by rememberSaveable { mutableStateOf(perfil.quantidadeFilhos?.name ?: "") }
@@ -102,6 +104,10 @@ fun EditarPerfilScreen(
                 BotaoPrincipal(
                     texto = stringResource(R.string.edi_salvar),
                     onClick = {
+                        if (nome.isBlank()) {
+                            nomeComErro = true
+                            return@BotaoPrincipal
+                        }
                         aoSalvar(
                             perfil.copy(
                                 nome = nome.trim(),
@@ -173,8 +179,12 @@ fun EditarPerfilScreen(
             Spacer(Modifier.height(8.dp))
             CampoTexto(
                 nome,
-                { nome = it.take(60) },
+                {
+                    nome = it.take(60)
+                    nomeComErro = false
+                },
                 stringResource(R.string.cad_nome_placeholder),
+                erro = if (nomeComErro) stringResource(R.string.erro_campo_obrigatorio) else null,
             )
             Spacer(Modifier.height(16.dp))
 

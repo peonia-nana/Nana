@@ -18,7 +18,11 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -37,6 +41,11 @@ import com.peonia.nana.ui.apoio.ApoioScreen
 import com.peonia.nana.ui.components.FundoNana
 import com.peonia.nana.ui.diario.DiarioScreen
 import com.peonia.nana.ui.diario.DiarioViewModel
+import com.peonia.nana.data.CategoriaConteudo
+import com.peonia.nana.data.Conteudo
+import com.peonia.nana.data.ConteudosViewModel
+import com.peonia.nana.ui.direitos.AbaDireitos
+import com.peonia.nana.ui.direitos.ConteudoScreen
 import com.peonia.nana.ui.direitos.DireitoDetalheScreen
 import com.peonia.nana.ui.direitos.DireitosScreen
 import com.peonia.nana.ui.inicio.InicioScreen
@@ -54,6 +63,7 @@ private enum class Aba(val rota: String, val rotulo: Int, val icone: ImageVector
 }
 
 private const val ROTA_DIREITO_DETALHE = "direito/{tema}"
+private const val ROTA_CONTEUDO = "conteudo/{id}"
 
 /**
  * Área principal do app: o fundo, a barra inferior e as telas de cada aba.
@@ -76,18 +86,34 @@ fun PrincipalScreen(
     val entrada by nav.currentBackStackEntryAsState()
     val rotaAtual = entrada?.destination?.route
     val abaAtual = when (rotaAtual) {
-        ROTA_DIREITO_DETALHE -> Aba.DIREITOS
+        ROTA_DIREITO_DETALHE, ROTA_CONTEUDO -> Aba.DIREITOS
         else -> Aba.entries.firstOrNull { it.rota == rotaAtual } ?: Aba.INICIO
     }
 
     val irPara: (Aba) -> Unit = { aba ->
-        if (aba != abaAtual || rotaAtual == ROTA_DIREITO_DETALHE) {
+        if (aba != abaAtual || rotaAtual == ROTA_DIREITO_DETALHE || rotaAtual == ROTA_CONTEUDO) {
             nav.navigate(aba.rota) {
                 popUpTo(Aba.INICIO.rota) { inclusive = false }
                 launchSingleTop = true
             }
         }
     }
+
+    // Conteúdos educativos: um só ouvinte para a lista e para o detalhe.
+    val conteudosVm: ConteudosViewModel = viewModel()
+    val conteudos by conteudosVm.estado.collectAsStateWithLifecycle()
+
+    // Aba e filtro da tela Direitos ficam aqui para o Início poder abrir a
+    // tela já na aba "Sua saúde" e na categoria da fase da mãe.
+    var abaDireitos by rememberSaveable { mutableStateOf(AbaDireitos.DIREITOS) }
+    var categoriaSaude by rememberSaveable { mutableStateOf<CategoriaConteudo?>(null) }
+
+    val abrirSaude: (CategoriaConteudo?) -> Unit = { categoria ->
+        abaDireitos = AbaDireitos.SAUDE
+        categoriaSaude = categoria
+        irPara(Aba.DIREITOS)
+    }
+    val abrirConteudo: (Conteudo) -> Unit = { nav.navigate("conteudo/${it.id}") }
 
     Box(
         Modifier
@@ -129,25 +155,47 @@ fun PrincipalScreen(
                     val registros by diarioVm.registros.collectAsStateWithLifecycle()
                     InicioScreen(
                         perfil = perfil,
-                        humorDeHoje = registros[LocalDate.now()],
+                        humorDeHoje = registros[LocalDate.now()]?.humor,
                         aoRegistrarHumor = { humor -> diarioVm.registrarHoje(humor, aoAvisar) },
-                        aoAvisar = { aoAvisar(R.string.proxima_etapa_aviso) },
-                        aoAbrirDireitos = { irPara(Aba.DIREITOS) },
+                        aoAbrirComunidade = { irPara(Aba.APOIO) },
+                        aoAbrirDireitos = {
+                            abaDireitos = AbaDireitos.DIREITOS
+                            irPara(Aba.DIREITOS)
+                        },
+                        // "Para o seu momento": já filtrado pela fase do cadastro.
+                        aoAbrirMomento = { abrirSaude(CategoriaConteudo.daFase(perfil.fase)) },
+                        aoAbrirSaude = { abrirSaude(null) },
                     )
                 }
                 composable(Aba.DIARIO.rota) {
                     DiarioScreen(aoAvisar = aoAvisar)
                 }
                 composable(Aba.DIREITOS.rota) {
-                    DireitosScreen(aoAbrirTema = { tema -> nav.navigate("direito/${tema.name}") })
+                    DireitosScreen(
+                        aba = abaDireitos,
+                        aoMudarAba = { abaDireitos = it },
+                        categoria = categoriaSaude,
+                        aoMudarCategoria = { categoriaSaude = it },
+                        conteudos = conteudos,
+                        aoAbrirTema = { tema -> nav.navigate("direito/${tema.name}") },
+                        aoAbrirConteudo = abrirConteudo,
+                    )
                 }
                 composable(ROTA_DIREITO_DETALHE) { entradaDetalhe ->
                     val tema = TemaDireito.porNome(entradaDetalhe.arguments?.getString("tema"))
                     if (tema == null) {
-                        DireitosScreen(aoAbrirTema = { nav.navigate("direito/${it.name}") })
+                        LaunchedEffect(Unit) { nav.popBackStack() }
                     } else {
                         DireitoDetalheScreen(tema = tema, aoVoltar = { nav.popBackStack() })
                     }
+                }
+                composable(ROTA_CONTEUDO) { entradaConteudo ->
+                    val id = entradaConteudo.arguments?.getString("id")
+                    ConteudoScreen(
+                        conteudo = conteudos.lista?.firstOrNull { it.id == id },
+                        aoVoltar = { nav.popBackStack() },
+                        aoAvisar = aoAvisar,
+                    )
                 }
                 composable(Aba.APOIO.rota) {
                     ApoioScreen(aoAbrirChat = aoAbrirChat, aoAvisar = aoAvisar)

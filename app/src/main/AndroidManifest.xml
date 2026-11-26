@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Necessária para falar com o Firebase. É a única permissão do app:
-         não pedimos acesso a fotos, contatos, localização nem câmera. -->
+    <!-- Necessária para falar com o Firebase. Não pedimos acesso a fotos,
+         contatos, localização nem câmera. -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Avisos (Android 13 ou mais novo pede autorização da usuária). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="false"

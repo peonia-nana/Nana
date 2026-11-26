@@ -1,5 +1,14 @@
 package com.peonia.nana.ui
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
+import androidx.core.content.ContextCompat
+import com.peonia.nana.notificacoes.Agendador
 import android.app.Application
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -108,10 +117,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun sair() {
+        Agendador.cancelarTudo(getApplication())
         viewModelScope.launch { autenticacao.sair() }
     }
 
     fun apagarTudo(aoConcluir: (Boolean) -> Unit) {
+        Agendador.cancelarTudo(getApplication())
         viewModelScope.launch {
             aoConcluir(MeusDados.apagarTudo(getApplication()))
         }
@@ -290,6 +301,24 @@ private fun AppLogado(
 ) {
     val contexto = LocalContext.current
     val escopo = rememberCoroutineScope()
+
+    // Avisos: liga conforme as preferências e, uma única vez, pede a
+    // autorização do Android 13+. Depois disso, só pela tela Notificações.
+    val pedirPermissao = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { }
+    LaunchedEffect(Unit) {
+        Agendador.aplicar(contexto)
+        val sp = contexto.getSharedPreferences("avisos_estado", Context.MODE_PRIVATE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !sp.getBoolean("permissao_pedida", false) &&
+            ContextCompat.checkSelfPermission(contexto, Manifest.permission.POST_NOTIFICATIONS) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            sp.edit().putBoolean("permissao_pedida", true).apply()
+            pedirPermissao.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     // LGPD, art. 18, II e V: cópia dos dados em formato aberto. Usado em
     // Meus dados e em Privacidade e segurança.

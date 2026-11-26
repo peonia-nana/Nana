@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.Balance
 import androidx.compose.material.icons.outlined.Groups
+import androidx.compose.material.icons.outlined.HealthAndSafety
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -58,10 +59,9 @@ import com.peonia.nana.ui.theme.NanaCores
 /**
  * 05 – Tela inicial personalizada.
  *
- * O documento define só a chegada a esta tela: destaque para conteúdos da fase
- * informada e acesso fácil ao acolhimento emocional e ao diário. O que acontece
- * dentro de cada área pertence à próxima etapa da jornada. Por isso, tocar nessas
- * áreas mostra só um aviso, sem criar telas novas.
+ * Destaque para os conteúdos da fase informada ("Para o seu momento", que
+ * abre Direitos › Sua saúde já filtrado pela fase), acolhimento emocional e
+ * atalhos para Apoio ("Sua comunidade"), Direitos e Sua saúde.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -69,11 +69,11 @@ fun InicioScreen(
     perfil: Perfil,
     humorDeHoje: Humor?,
     aoRegistrarHumor: (Humor) -> Unit,
-    aoAvisar: () -> Unit,
+    aoAbrirComunidade: () -> Unit,
     aoAbrirDireitos: () -> Unit,
+    aoAbrirMomento: () -> Unit,
+    aoAbrirSaude: () -> Unit,
 ) {
-    val mostrarAviso: () -> Unit = aoAvisar
-
     Column(
         Modifier
             .fillMaxSize()
@@ -130,7 +130,7 @@ fun InicioScreen(
                 descricao = faseTexto?.let { stringResource(R.string.ini_momento_desc, it) }
                     ?: stringResource(R.string.func_conteudos_desc),
                 destaque = true,
-                aoTocar = mostrarAviso,
+                aoTocar = aoAbrirMomento,
             )
             if (perfil.interesses.isNotEmpty()) {
                 Spacer(Modifier.height(12.dp))
@@ -154,7 +154,8 @@ fun InicioScreen(
                 icone = Icons.Outlined.Groups,
                 titulo = stringResource(R.string.ini_comunidade_titulo),
                 descricao = stringResource(R.string.ini_comunidade_desc),
-                aoTocar = mostrarAviso,
+                // A comunidade são os chats da aba Apoio.
+                aoTocar = aoAbrirComunidade,
             )
             Spacer(Modifier.height(12.dp))
             CartaoArea(
@@ -163,6 +164,14 @@ fun InicioScreen(
                 descricao = stringResource(R.string.ini_direitos_desc),
                 // Este cartão leva para a aba Direitos, que já existe no app.
                 aoTocar = aoAbrirDireitos,
+            )
+            Spacer(Modifier.height(12.dp))
+            CartaoArea(
+                icone = Icons.Outlined.HealthAndSafety,
+                titulo = stringResource(R.string.ini_saude_titulo),
+                descricao = stringResource(R.string.ini_saude_desc),
+                // Leva para Direitos, já na aba "Sua saúde".
+                aoTocar = aoAbrirSaude,
             )
     }
 }

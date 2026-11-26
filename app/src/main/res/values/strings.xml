@@ -111,6 +111,8 @@
     <string name="ini_comunidade_desc">Mulheres como você, perto de você</string>
     <string name="ini_direitos_titulo">Seus direitos</string>
     <string name="ini_direitos_desc">Saiba o que você pode pedir</string>
+    <string name="ini_saude_titulo">Sua saúde</string>
+    <string name="ini_saude_desc">Gestação, pós-parto e saúde mental</string>
     <string name="nav_inicio">Início</string>
     <string name="nav_diario">Diário</string>
     <string name="nav_direitos">Direitos</string>
@@ -122,7 +124,26 @@
     <string name="dir_apoio">Tire suas dúvidas</string>
     <string name="dir_busca">Campo de busca</string>
     <string name="dir_lista_temas">Lista de temas</string>
-    <string name="dir_sem_resultado">Nenhum tema encontrado para essa busca.</string>
+    <string name="dir_aba_direitos">Direitos</string>
+    <string name="dir_aba_saude">Sua saúde</string>
+    <string name="dir_leia_tambem">Leia também</string>
+
+    <!-- Conteúdos educativos (aba Sua saúde) -->
+    <string name="cat_todos">Todos</string>
+    <string name="cat_gestacao">Gestação</string>
+    <string name="cat_pos_parto">Pós-parto</string>
+    <string name="cat_saude_mental">Saúde mental</string>
+    <string name="cat_meus_direitos">Meus direitos</string>
+    <string name="sau_vazio">Ainda não há conteúdos nesta categoria.</string>
+    <string name="sau_erro">Não deu para carregar os conteúdos agora. Confira sua conexão.</string>
+    <string name="sau_nao_encontrado">Conteúdo não encontrado</string>
+    <string name="sau_compartilhar">Compartilhar</string>
+    <string name="sau_fontes">Fontes</string>
+    <string name="sau_ver_estudo">Ver estudo</string>
+    <string name="sau_link_erro">Não deu para abrir agora.</string>
+    <string name="sau_fonte_prefixo">Fonte:</string>
+    <string name="sau_via_nana">Compartilhado pelo app Nanã</string>
+    <string name="dir_sem_resultado">Nada encontrado para essa busca.</string>
 
     <!-- Tema: acompanhante -->
     <string name="dir_acomp_titulo">Direito a Acompanhante</string>
@@ -249,7 +270,23 @@
     <string name="dia_apagar">Apagar registro deste dia</string>
     <string name="dia_apagado">Registro apagado.</string>
     <string name="dia_futuro">Ainda não dá para registrar um dia que não chegou.</string>
-    <string name="dia_legenda">Legenda dos sentimentos</string>
+    <string name="dia_legenda">Legenda: cores dos sentimentos e verde para os dias em que você escreveu</string>
+    <string name="dia_legenda_registro">Dia com registro no diário</string>
+    <string name="dia_legenda_escrita">Escreveu</string>
+    <string name="dia_desc_ambos">%1$s, com texto escrito</string>
+    <string name="dia_tem_registro">com texto escrito</string>
+    <string name="dia_como_se_sente">Como você está se sentindo?</string>
+    <string name="dia_placeholder">Escreva aqui, do seu jeito, como foi o seu dia e como você se sente…</string>
+    <string name="dia_privado">Só você vê o que escreve aqui.</string>
+    <string name="dia_salvar">Salvar no diário</string>
+    <string name="dia_vazio">Escreva alguma coisa antes de salvar.</string>
+    <string name="dia_o_que_escreveu">O que você escreveu</string>
+    <string name="dia_sentiu_se">Sentiu-se: %1$s</string>
+    <string name="dia_editar">Editar</string>
+    <string name="dia_apagar_curto">Apagar</string>
+    <string name="dia_apagar_titulo">Apagar o que você escreveu?</string>
+    <string name="dia_apagar_texto">O texto deste dia será apagado e não dá para desfazer.</string>
+    <string name="dia_apagar_confirmar">Apagar</string>
     <string name="dia_dom">D</string>
     <string name="dia_seg">S</string>
     <string name="dia_ter">T</string>
@@ -284,7 +321,41 @@
     <string name="not_naoincomodar">Não incomodar</string>
     <string name="not_naoincomodar_desc">Silencia avisos à noite</string>
     <string name="not_rodape">Você pode mudar isso quando quiser.</string>
-    <string name="not_pendente">As escolhas ficam salvas, mas o app ainda não envia avisos. Isso será ligado numa próxima etapa.</string>
+    <string name="not_info">Avisos de chat, de conteúdos novos e dicas são conferidos a cada 15 minutos e podem chegar com alguns minutos de atraso.</string>
+    <string name="not_sem_permissao">Sem autorização, o Android não deixa o Nanã mostrar avisos. Você pode liberar nas configurações do celular.</string>
+
+    <!-- Avisos (notificações) -->
+    <string name="canal_diario">Lembrete do diário</string>
+    <string name="canal_apoio">Mensagens dos chats</string>
+    <string name="canal_conteudos">Conteúdos novos</string>
+    <string name="canal_bem_estar">Dicas de bem-estar</string>
+    <string name="aviso_publico">Você tem novidades no Nanã</string>
+    <string name="aviso_diario_titulo">Como você está hoje?</string>
+    <string name="aviso_diario_texto">Seu diário está aqui quando você quiser escrever. Sem pressa.</string>
+    <plurals name="aviso_chat">
+        <item quantity="one">%1$d mensagem nova em %2$s</item>
+        <item quantity="other">%1$d mensagens novas em %2$s</item>
+    </plurals>
+    <string name="aviso_conteudos_titulo">Conteúdo novo para você</string>
+    <string name="aviso_conteudos_varios">%1$d conteúdos novos em Sua saúde</string>
+    <string name="aviso_dica_titulo">Um respiro para você</string>
+    <!--
+      Mensagens curtas de acolhimento (Dicas de bem-estar). Sem informação
+      médica de propósito. A equipe pode trocar, tirar ou acrescentar à vontade:
+      o app usa uma por dia, em sequência.
+    -->
+    <string-array name="dicas_bem_estar">
+        <item>Você não precisa dar conta de tudo hoje. Fazer o que dá já é muito.</item>
+        <item>Beber um copo de água e respirar fundo por um minuto também é cuidar de você.</item>
+        <item>Pedir ajuda não é fraqueza. Quem cuida também merece ser cuidada.</item>
+        <item>Seu jeito de cuidar é único. Não existe uma única forma certa de ser mãe.</item>
+        <item>Se algo no seu corpo parecer diferente, você tem o direito de ser ouvida pela equipe de saúde.</item>
+        <item>Separe um momento só seu hoje, nem que sejam cinco minutos.</item>
+        <item>Os dias difíceis passam. Você não está sozinha: a comunidade no Apoio está aqui.</item>
+        <item>Escrever o que sente pode deixar o peito mais leve. Seu diário guarda isso só para você.</item>
+        <item>Descansar também é parte do cuidado. Durma quando der, sem culpa.</item>
+        <item>Você conhece seu corpo e sua história. Confie no que você sente.</item>
+    </string-array>
     <string name="salvar_alteracoes">Salvar alterações</string>
     <string name="cancelar">Cancelar</string>
     <string name="salvo">Alterações salvas.</string>

@@ -18,11 +18,13 @@ enum class CampoCadastro {
  * usuária leva um erro sem entender por quê.
  *
  * Hoje são obrigatórios:
+ *   NOME  — decisão da equipe
  *   FASE  — a tela inicial depende dela para escolher os conteúdos
  *   IDADE — decisão da equipe
  */
 object RegrasCadastro {
     val camposObrigatorios: Set<CampoCadastro> = setOf(
+        CampoCadastro.NOME,
         CampoCadastro.FASE,
         CampoCadastro.IDADE,
     )

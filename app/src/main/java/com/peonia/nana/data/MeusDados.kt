@@ -151,13 +151,14 @@ object MeusDados {
         }
     }
 
-    private fun diarioEmJson(registros: Map<LocalDate, Humor>): JSONArray {
+    private fun diarioEmJson(registros: Map<LocalDate, RegistroDiario>): JSONArray {
         val lista = JSONArray()
-        registros.toSortedMap().forEach { (data, humor) ->
+        registros.toSortedMap().forEach { (data, r) ->
             lista.put(
                 JSONObject().apply {
                     put("dataRegistro", data.toString())
-                    put("sentimento", humor.name)
+                    put("sentimento", r.humor?.name ?: JSONObject.NULL)
+                    put("descricao", r.texto ?: JSONObject.NULL)
                 },
             )
         }
